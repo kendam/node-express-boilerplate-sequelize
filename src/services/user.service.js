@@ -1,6 +1,30 @@
 const httpStatus = require('http-status');
-const { User } = require('../models');
+const bcrypt = require('bcryptjs');
 const ApiError = require('../utils/ApiError');
+const db = require('../models');
+const logger = require('../config/logger');
+
+/**
+ * Check if email is taken
+ * @param {string} email - The user's email
+ * @returns {Promise<boolean>}
+ */
+const isEmailTaken = async function (email) {
+  const user = await db.users.findOne({ where: { email } });
+  logger.info(user);
+  return !!user;
+};
+
+/**
+ * Check if password matches the user's password
+ * @param {string} password
+ * @returns {Promise<boolean>}
+ */
+const isPasswordMatch = async function (user, password) {
+  const comp = bcrypt.compareSync(password, user.password);
+  logger.info(comp);
+  return comp;
+};
 
 /**
  * Create a user
@@ -8,10 +32,12 @@ const ApiError = require('../utils/ApiError');
  * @returns {Promise<User>}
  */
 const createUser = async (userBody) => {
-  if (await User.isEmailTaken(userBody.email)) {
+  if (await isEmailTaken(userBody.email)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
-  return User.create(userBody);
+  // eslint-disable-next-line no-param-reassign
+  userBody.password = bcrypt.hashSync(userBody.password, 8);
+  return db.users.create(userBody);
 };
 
 /**
@@ -24,7 +50,7 @@ const createUser = async (userBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryUsers = async (filter, options) => {
-  const users = await User.paginate(filter, options);
+  const users = await db.users.paginate(filter, options);
   return users;
 };
 
@@ -34,7 +60,7 @@ const queryUsers = async (filter, options) => {
  * @returns {Promise<User>}
  */
 const getUserById = async (id) => {
-  return User.findById(id);
+  return db.users.findById(id);
 };
 
 /**
@@ -43,7 +69,7 @@ const getUserById = async (id) => {
  * @returns {Promise<User>}
  */
 const getUserByEmail = async (email) => {
-  return User.findOne({ email });
+  return db.users.findOne({ where: { email } });
 };
 
 /**
@@ -57,11 +83,11 @@ const updateUserById = async (userId, updateBody) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
+  if (updateBody.email && (await isEmailTaken(updateBody.email, userId))) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
   Object.assign(user, updateBody);
-  await user.save();
+  await db.users.update(user);
   return user;
 };
 
@@ -75,7 +101,7 @@ const deleteUserById = async (userId) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  await user.remove();
+  await db.users.destroy(user);
   return user;
 };
 
@@ -86,4 +112,5 @@ module.exports = {
   getUserByEmail,
   updateUserById,
   deleteUserById,
+  isPasswordMatch,
 };
