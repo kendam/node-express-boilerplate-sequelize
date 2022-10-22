@@ -10,27 +10,12 @@ By running a single command, you will get a production-ready Node.js app install
 
 ## Quick Start
 
-To create a project, simply run:
-
-```bash
-npx create-nodejs-express-app <project-name>
-```
-
-Or
-
-```bash
-npm init nodejs-express-app <project-name>
-```
-
-## Manual Installation
-
-If you would still prefer to do the installation manually, follow these steps:
 
 Clone the repo:
 
 ```bash
-git clone --depth 1 https://github.com/hagopj13/node-express-boilerplate.git
-cd node-express-boilerplate
+git clone --depth 1 https://github.com/kendam/node-express-boilerplate-sequelize.git
+cd node-express-boilerplate-sequelize
 npx rimraf ./.git
 ```
 
@@ -66,7 +51,10 @@ cp .env.example .env
 
 ## Features
 
-- **NoSQL database**: [MongoDB](https://www.mongodb.com) object data modeling using [Mongoose](https://mongoosejs.com)
+- **NoSQL database**: [MongoDB](https://www.mongodb.com) object data modeling using [Mongoose]
+(https://mongoosejs.com)
+- **Sequelize**: (https://sequelize.org/) modern TypeScript and Node.js ORM for Oracle, Postgres, MySQL, MariaDB, SQLite and SQL Server, and more
+(https://mongoosejs.com)
 - **Authentication and authorization**: using [passport](http://www.passportjs.org)
 - **Validation**: request data validation using [Joi](https://github.com/hapijs/joi)
 - **Logging**: using [winston](https://github.com/winstonjs/winston) and [morgan](https://github.com/expressjs/morgan)
