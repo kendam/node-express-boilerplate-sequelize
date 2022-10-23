@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const bcrypt = require('bcryptjs');
 const ApiError = require('../utils/ApiError');
-const db = require('../models');
+const { db } = require('../models');
 const logger = require('../config/logger');
 
 /**
@@ -20,7 +20,7 @@ const isEmailTaken = async function (email) {
  * @param {string} password
  * @returns {Promise<boolean>}
  */
-const isPasswordMatch = async function (user, password) {
+const isPasswordMatch = async function (password, user) {
   const comp = bcrypt.compareSync(password, user.password);
   logger.info(comp);
   return comp;

@@ -1,6 +1,3 @@
-// module.exports.Token = require('./token.model');
-// module.exports.User = require('./user.model');
-
 const Sequelize = require('sequelize');
 const { sequelize } = require('../config/config');
 const logger = require('../config/logger');
@@ -31,6 +28,7 @@ db.sequelize = sequelizeInstance;
 db.Sequelize = Sequelize;
 
 db.users = require('./user.model')(sequelizeInstance, Sequelize);
+db.tokens = require('./token.model')(sequelizeInstance, Sequelize);
 
 // relationships for models
 
@@ -40,4 +38,6 @@ db.users = require('./user.model')(sequelizeInstance, Sequelize);
 // db.User.hasMany(db.Role);
 // db.Role.belongsTo(db.User);
 
-module.exports = db;
+module.exports = {
+  db,
+};

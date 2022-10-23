@@ -1,5 +1,4 @@
 const validator = require('validator');
-const { roles } = require('../config/roles');
 
 module.exports = (sequelize, dataType) => {
   const user = sequelize.define('user', {
