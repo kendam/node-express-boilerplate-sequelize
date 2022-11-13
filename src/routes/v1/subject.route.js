@@ -1,40 +1,29 @@
 const express = require('express');
-const auth = require('../../middlewares/auth');
-const validate = require('../../middlewares/validate');
-const userValidation = require('../../validations/user.validation');
-const userController = require('../../controllers/user.controller');
+const { subjectController } = require('../../controllers');
 
 const router = express.Router();
 
-router
-  .route('/')
-  .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
-  .get(auth('getUsers'), validate(userValidation.getUsers), userController.getUsers);
+router.route('/').post(subjectController.createSubject).get(subjectController.getSubjects);
 
-router
-  .route('/:userId')
-  .get(auth('getUsers'), validate(userValidation.getUser), userController.getUser)
-  .patch(auth('manageUsers'), validate(userValidation.updateUser), userController.updateUser)
-  .delete(auth('manageUsers'), validate(userValidation.deleteUser), userController.deleteUser);
+router.route('/:id').get(subjectController.getSubjectById);
 
 module.exports = router;
 
 /**
  * @swagger
  * tags:
- *   name: Users
- *   description: User management and retrieval
+ *   name: Teacher
+ *   description: Teacher management and retrieval
  */
 
 /**
  * @swagger
- * /users:
+ * /teachers:
  *   post:
- *     summary: Create a user
+ *     summary: Create a teacher
  *     description: Only admins can create other users.
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
+ *     tags: [Teacher]
+ *     
  *     requestBody:
  *       required: true
  *       content:
@@ -42,31 +31,62 @@ module.exports = router;
  *           schema:
  *             type: object
  *             required:
- *               - fisrtName
- *               - lastName
- *               - email
- *               - password
-
+ *               - userId
+ *               - highestQualification
+ *               - title
  *             properties:
- *               firstName:
+ *               name:
+ *                 type: number
+ *               highestQualification:
  *                 type: string
- *               lastName: 
- *                  type: string
- *               email:
+ *               title:
  *                 type: string
- *                 format: email
- *                 description: must be unique
- *               password:
- *                 type: string
- *                 format: password
- *                 minLength: 8
- *                 description: At least one number and one letter
- *              
  *             example:
- *               firstName: fake name
- *               lastName: name
- *               email: fake@example.com
- *               password: password1
+ *               userId: 4
+ *               highestQualification: PhD
+ *               title: Prof.
+
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateEmail'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *
+ * /teachers/subjects:
+ *   post:
+ *     summary: Create a teacher and assocaited subjects
+ *     description: Create a teacher and assocaited subjects
+ *     tags: [Teacher]
+ *     
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - subject
+ *               - teacher
+ *              
+ *             properties:
+ *               subject:
+ *                 type: object
+ *               teacher:
+ *                 type: object
+ *             
+ *             example:
+ *               subject:  { title : Biology, description: Biology as a subject, creditUnit: 3  }
+ *               teacher: { userId:1  title: Prof, highestQualification: PhD }
+ *               
+
  *     responses:
  *       "201":
  *         description: Created

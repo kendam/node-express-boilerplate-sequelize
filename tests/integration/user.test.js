@@ -9,7 +9,7 @@ const { userOneAccessToken, adminAccessToken } = require('../fixtures/token.fixt
 
 setupTestDB();
 
-describe('User routes', () => {
+describe.skip('User routes', () => {
   describe('POST /v1/users', () => {
     let newUser;
 
